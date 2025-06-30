@@ -1,10 +1,24 @@
+"use client";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Music, DollarSign, Globe, Shield, TrendingUp, Users } from "lucide-react"
 import Link from "next/link"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function HomePage() {
+  const router = useRouter();
+
+  // Redirect authenticated users to /dashboard
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (localStorage.getItem("isAuthenticated") === "true") {
+        router.replace("/dashboard");
+      }
+    }
+  }, [router]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -24,8 +38,8 @@ export default function HomePage() {
             <Link href="#about" className="text-muted-foreground hover:text-foreground">
               About
             </Link>
-            <Button variant="outline">Sign In</Button>
-            <Button>Get Started</Button>
+            <Link href="/login"><Button variant="outline">Sign In</Button></Link>
+            <Link href="/login"><Button>Get Started</Button></Link>
           </nav>
         </div>
       </header>
@@ -45,10 +59,12 @@ export default function HomePage() {
             publisher share from over 200 territories worldwide.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="bg-primary hover:bg-primary/90">
-              Start Collecting Royalties
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/login">
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                Start Collecting Royalties
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <Button size="lg" variant="outline">
               See How It Works
             </Button>

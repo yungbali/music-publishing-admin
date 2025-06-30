@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Client } from "@/lib/types";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
@@ -11,6 +11,18 @@ export default function ClientsPage() {
   const [form, setForm] = useState<Partial<Client>>({});
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    // Load clients from localStorage on mount
+    const stored = localStorage.getItem("clients");
+    if (stored) setClients(JSON.parse(stored));
+  }, []);
+
+  const addActivity = (msg: string) => {
+    const activity = JSON.parse(localStorage.getItem("activity") || "[]");
+    activity.unshift(msg);
+    localStorage.setItem("activity", JSON.stringify(activity.slice(0, 10)));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -21,24 +33,28 @@ export default function ClientsPage() {
       setError("Name and email are required.");
       return;
     }
-    setClients([
-      ...clients,
-      {
-        id: uuidv4(),
-        name: form.name!,
-        email: form.email!,
-        phone: form.phone,
-        contactPerson: form.contactPerson,
-        paymentInfo: form.paymentInfo,
-        taxInfo: form.taxInfo,
-      },
-    ]);
+    const newClient = {
+      id: uuidv4(),
+      name: form.name!,
+      email: form.email!,
+      phone: form.phone,
+      contactPerson: form.contactPerson,
+      paymentInfo: form.paymentInfo,
+      taxInfo: form.taxInfo,
+    };
+    const updated = [...clients, newClient];
+    setClients(updated);
+    localStorage.setItem("clients", JSON.stringify(updated));
+    addActivity(`Added new client: ${newClient.name}`);
     setForm({});
     setError(null);
   };
 
   const handleDelete = (id: string) => {
-    setClients(clients.filter((c) => c.id !== id));
+    const updated = clients.filter((c) => c.id !== id);
+    setClients(updated);
+    localStorage.setItem("clients", JSON.stringify(updated));
+    addActivity("Deleted a client");
   };
 
   return (
