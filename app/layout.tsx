@@ -15,11 +15,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-mono antialiased">{children}</body>
+      <body 
+        style={{ fontFamily: "var(--font-family)" }} 
+        className="antialiased"
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
     </html>
   )
 }

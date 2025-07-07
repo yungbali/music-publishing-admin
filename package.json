@@ -6,7 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "init-typesense": "npx tsx scripts/init-typesense.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -56,6 +57,7 @@
     "sonner": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "typesense": "^2.0.3",
     "uuid": "^11.1.0",
     "vaul": "latest",
     "zod": "^3.24.1"
