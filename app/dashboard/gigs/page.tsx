@@ -23,9 +23,15 @@ export default function GigsPage() {
   const [setlistSongId, setSetlistSongId] = useState<string>("");
 
   useEffect(() => {
-    setGigs(getGigs());
-    setClients(getClients());
-    setSongs(getSongs());
+    async function fetchData() {
+      const gigsData = await getGigs();
+      const clientsData = await getClients();
+      const songsData = await getSongs();
+      setGigs(gigsData);
+      setClients(clientsData);
+      setSongs(songsData);
+    }
+    fetchData();
   }, []);
 
   // Handle form field changes
