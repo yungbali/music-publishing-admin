@@ -64,14 +64,15 @@ export async function updateSong(id: string, data: Partial<Song>): Promise<Song 
     const updated = await client.collections('songs').documents(id).update(updateDoc);
     
     // Reconstruct the Song object
+    const updatedDoc = updated as any;
     return {
-      id: updated.id,
-      clientId: updated.clientId,
-      spotifyId: updated.spotifyId,
-      title: updated.title,
-      isrc: updated.isrc,
-      writers: updated.writers || data.writers || [],
-      splits: updated.splitInfo ? JSON.parse(updated.splitInfo) : (data.splits || [])
+      id: updatedDoc.id,
+      clientId: updatedDoc.clientId,
+      spotifyId: updatedDoc.spotifyId,
+      title: updatedDoc.title,
+      isrc: updatedDoc.isrc,
+      writers: updatedDoc.writers || data.writers || [],
+      splits: updatedDoc.splitInfo ? JSON.parse(updatedDoc.splitInfo) : (data.splits || [])
     } as Song;
   } catch {
     return null;
@@ -85,14 +86,15 @@ export async function getSongById(id: string): Promise<Song | null> {
     const doc = await client.collections('songs').documents(id).retrieve();
     
     // Reconstruct the Song object from flattened Typesense document
+    const songDoc = doc as any;
     return {
-      id: doc.id,
-      clientId: doc.clientId,
-      spotifyId: doc.spotifyId,
-      title: doc.title,
-      isrc: doc.isrc,
-      writers: doc.writers || [],
-      splits: doc.splitInfo ? JSON.parse(doc.splitInfo) : (doc.splits || [])
+      id: songDoc.id,
+      clientId: songDoc.clientId,
+      spotifyId: songDoc.spotifyId,
+      title: songDoc.title,
+      isrc: songDoc.isrc,
+      writers: songDoc.writers || [],
+      splits: songDoc.splitInfo ? JSON.parse(songDoc.splitInfo) : (songDoc.splits || [])
     } as Song;
   } catch {
     return null;
@@ -106,7 +108,16 @@ export async function getWriters(query = ""): Promise<Writer[]> {
     query_by: 'name',
     per_page: 100,
   });
-  return result.hits?.map((hit: any) => hit.document) || [];
+  return result.hits?.map((hit: any) => {
+    const doc = hit.document;
+    return {
+      id: doc.id,
+      name: doc.name,
+      role: doc.role,
+      email: doc.email,
+      contactInfo: doc.contactInfo
+    } as Writer;
+  }) || [];
 }
 export async function createWriter(data: Partial<Writer>): Promise<Writer> {
   const writer: Writer = { ...data, id: uuidv4() } as Writer;
@@ -144,7 +155,18 @@ export async function getClients(query = ""): Promise<Client[]> {
     query_by: 'name',
     per_page: 100,
   });
-  return result.hits?.map((hit: any) => hit.document) || [];
+  return result.hits?.map((hit: any) => {
+    const doc = hit.document;
+    return {
+      id: doc.id,
+      name: doc.name,
+      email: doc.email,
+      phone: doc.phone,
+      contactPerson: doc.contactPerson,
+      paymentInfo: doc.paymentInfo,
+      taxInfo: doc.taxInfo
+    } as Client;
+  }) || [];
 }
 export async function createClient(data: Partial<Client>): Promise<Client> {
   const clientObj: Client = { ...data, id: uuidv4() } as Client;
